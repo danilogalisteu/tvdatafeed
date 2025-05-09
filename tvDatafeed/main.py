@@ -192,6 +192,7 @@ class TvDatafeed:
         interval: Interval = Interval.in_daily,
         n_bars: int = 10,
         fut_contract: int = None,
+        adjusted: bool = False,
         extended_session: bool = False,
     ) -> pd.DataFrame:
         """get historical data
@@ -201,8 +202,9 @@ class TvDatafeed:
             exchange (str, optional): exchange, not required if symbol is in format EXCHANGE:SYMBOL. Defaults to None.
             interval (str, optional): chart interval. Defaults to 'D'.
             n_bars (int, optional): no of bars to download, max 5000. Defaults to 10.
-            fut_contract (int, optional): None for cash, 1 for continuous current contract in front, 2 for continuous next contract in front . Defaults to None.
-            extended_session (bool, optional): regular session if False, extended session if True, Defaults to False.
+            fut_contract (int, optional): None for cash, 1 for continuous current contract in front, 2 for continuous next contract in front. Defaults to None.
+            adjusted (bool, optional): prices adjusted for dividends if True. Defaults to False. Splits are always adjusted.
+            extended_session (bool, optional): regular session if False, extended session if True. Defaults to False.
 
         Returns:
             pd.Dataframe: dataframe with sohlcv as columns
@@ -261,7 +263,9 @@ class TvDatafeed:
                 "symbol_1",
                 '={"symbol":"'
                 + symbol
-                + '","adjustment":"splits","session":'
+                + '","adjustment":'
+                + ('"dividends"' if adjusted else '"splits"')
+                + ',"session":'
                 + ('"regular"' if not extended_session else '"extended"')
                 + "}",
             ],
